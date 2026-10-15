@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dealership lead form and call flow redesign — Justina Ruszczak</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="wrap site-head">
+  <a class="name" href="/">Justina Ruszczak</a>
+  <nav><a href="/" aria-current="page">Work</a><a href="/about">About</a><a href="mailto:justyna.ruszczak07@gmail.com">Contact</a></nav>
+</header>
+
+<main class="wrap">
+  <div class="case-head">
+    <p class="kicker">Case study 1 · Lead generation · Automotive</p>
+    <h1>Mobile quote form to qualified call: a lead flow rebuilt around what the data said</h1>
+    <div class="summary">
+      <div><strong>Problem</strong>Paid-search visitors on mobile abandoned a seven-field quote form at a rate that made cost per lead unsustainable, and the leads that did arrive were often not ready to buy.</div>
+      <div><strong>Outcome</strong><span class="todo">Form completion rose from A% to B%, qualified-call rate from C% to D%, and cost per qualified lead fell E% over eight weeks.</span> Figures come from GA4 and call-tracking data; replace with the verified numbers before publishing.</div>
+    </div>
+    <div class="case-meta">
+      <span><b>Role</b> Lead designer and analytics owner</span>
+      <span><b>Team</b> Dealer principal, web vendor developer, BDC manager</span>
+      <span><b>Timeline</b> 6 weeks design, 8 weeks measurement</span>
+      <span><b>Tools</b> GA4, Google Ads, CallRail, Figma, Maze, GTM</span>
+    </div>
+  </div>
+
+  <div class="case-body">
+    <aside class="rail" aria-label="Case study sections">
+      <ol>
+        <li><a href="#context"><span class="stage">Context</span>What the funnel showed</a></li>
+        <li><a href="#constraint"><span class="stage">Constraint</span>Vendor platform, compliance, BDC</a></li>
+        <li><a href="#decision"><span class="stage">Decision</span>Qualify first, ask for contact last</a></li>
+        <li><a href="#tradeoff"><span class="stage">Trade-off</span>Fewer fields, more BDC work</a></li>
+        <li><a href="#outcome"><span class="stage">Outcome</span>What changed</a></li>
+        <li><a href="#reflection"><span class="stage">Reflection</span>What I'd do differently</a></li>
+      </ol>
+      <a class="back" href="/">All work</a>
+    </aside>
+
+    <article class="prose">
+      <section id="context">
+        <h2><span class="stage">Context</span>The funnel said where to look before anyone said why</h2>
+        <p>I managed paid search for this dealership group as part of a 50-to-100-account automotive portfolio, so the first signal was financial: the store's cost per lead had drifted up for three months while impression share and click-through rate held steady. The problem was after the click.</p>
+        <p>GA4 funnel exploration on the "Get a Quote" page told the story in an afternoon. <span class="todo">X% of mobile sessions that viewed the form started it; Y% of starters submitted; the largest single drop was at the email field, the second at "Vehicle of Interest".</span> Desktop completed at roughly double the mobile rate on the same form.</p>
+        <p>Call-tracking data added the second half. <span class="todo">Of calls tagged by the BDC, N% were "just researching" or wrong-department, and the median qualified call came from a visitor who had searched a model plus "price" or "lease".</span> The form wasn't capturing intent, so the BDC couldn't prioritise.</p>
+        <p>Five remote usability sessions (Maze, mobile, recruited from the store's email list) explained the numbers. Nobody objected to giving a phone number; they objected to giving it before they knew what they'd get. Three of five read the consent text and hesitated at "and its partners".</p>
+        <h3>Problem statement</h3>
+        <p>Mobile visitors arriving from high-intent paid search abandon the quote form because it asks for contact details before showing any value, and the BDC cannot tell hot leads from research traffic because the form captures no purchase timing.</p>
+        <p>Success metrics, defined before design: form completion rate (mobile), qualified-call rate as tagged by BDC, cost per qualified lead.</p>
+      </section>
+
+      <section id="constraint">
+        <h2><span class="stage">Constraint</span>A vendor platform, compliance language, and a BDC with a script</h2>
+        <ul>
+          <li><strong>Vendor website platform.</strong> The dealer's site runs on a third-party automotive CMS; custom forms had to be built as an embedded component, with the vendor's developer doing the build. Anything I designed had to be specified precisely enough to be built without a meeting.</li>
+          <li><strong>Compliance.</strong> TCPA consent text was non-negotiable, but the wording and placement were mine to propose, with the dealer's counsel reviewing.</li>
+          <li><strong>The BDC.</strong> Business development reps call every lead within a set window from a script. A form that captured timing meant a new routing rule and a script change, which is operational work the BDC manager had to agree to.</li>
+          <li><strong>Attribution.</strong> Every change had to keep Google Ads conversion tracking intact. Breaking the conversion action mid-test would invalidate the measurement.</li>
+        </ul>
+      </section>
+
+      <section id="decision">
+        <h2><span class="stage">Decision</span>Ask what they want and when first; ask for contact last; offer a call at every step</h2>
+        <p>I designed three options and tested them as clickable prototypes with five new participants.</p>
+        <table>
+          <thead><tr><th>Option</th><th>What it did</th><th>Why rejected or chosen</th></tr></thead>
+          <tbody>
+            <tr><td>A. Trim the form</td><td>Same single page, four fields instead of seven, consent rewritten</td><td>Rejected. Completion improved in testing but still asked for contact first; captured no timing for the BDC.</td></tr>
+            <tr><td>B. Stepped form, qualify first</td><td>Three steps: vehicle, timing, mobile number. Price delivered by text. Click-to-call offered on step one and on confirmation.</td><td>Chosen. Highest completion in testing; timing answer gives the BDC a routing signal; a call path exists before and after the form.</td></tr>
+            <tr><td>C. Call-only</td><td>Replace the form with a tap-to-call hero and hours</td><td>Rejected. After-hours traffic (a third of mobile sessions) would have had nowhere to go.</td></tr>
+          </tbody>
+        </table>
+        <div class="decision"><strong>Decision.</strong> Option B. The order of questions is the design: what you want, when you're buying, where to send the price. The phone number is the last thing asked and the first thing explained.</div>
+        <p>Try both versions. The event log at the bottom shows the GTM tracking plan firing, including the <code>lead_quality</code> parameter the BDC routes on.</p>
+        <div class="demo">
+          <div class="demo-bar"><span>Interactive prototype · before and after</span><a href="/tools/lead-form/" target="_blank" rel="noopener">Open full screen</a></div>
+          <iframe src="/tools/lead-form/" title="Lead form prototype, before and after" height="760" loading="lazy"></iframe>
+        </div>
+        <h3>Design details that mattered</h3>
+        <ul>
+          <li>Chips instead of a dropdown for vehicle and timing: one tap, no keyboard, and the answer is visible for the BDC.</li>
+          <li>"Text me my price" instead of "Submit": the button says what happens next.</li>
+          <li>Consent rewritten to say one text, named salesperson, no partner sharing. Counsel approved on the first pass once "partners" was removed, which the dealer confirmed was never used.</li>
+          <li>Confirmation names the rep and the response window, then offers a call for people who don't want to wait.</li>
+          <li>Inline errors per step that say what to do, so a missed field never clears the form.</li>
+        </ul>
+        <h3>Handoff</h3>
+        <p>The vendor developer received the Figma file in Dev Mode, a one-page spec with every state, and a tracking plan: <code>form_view</code>, <code>form_step</code>, <code>form_field</code>, <code>form_error</code>, <code>generate_lead</code> (with <code>vehicle</code>, <code>timing</code>, <code>lead_quality</code>) and <code>click_to_call</code> (with <code>placement</code>). GA4 custom dimensions and the Google Ads conversion action were updated so the existing conversion kept firing and a new "qualified lead" conversion could be built on <code>lead_quality</code>.</p>
+      </section>
+
+      <section id="tradeoff">
+        <h2><span class="stage">Trade-off</span>Fewer fields meant more work for the BDC, and we accepted it</h2>
+        <p>Dropping email and last name meant the BDC had to collect them on the call. The BDC manager pushed back: the old form did their data entry for them. We agreed a two-week trial with a script change ("I'll text you the price now; what email should I send the full quote to?") and a check on CRM completeness afterwards.</p>
+        <div class="pushback"><strong>Engineering pushback</strong>The vendor developer flagged that the stepped form couldn't use the platform's native lead router. We kept the native router for the final submit and passed <code>timing</code> as a hidden field, so routing logic lived in the CRM where the BDC could change it, not in the form.</div>
+        <p>The other trade-off was speed. Option A could have shipped in a week. Option B took six, because it needed a script change, a CRM field and counsel review. I chose the slower option because it was the only one that fixed both problems the data showed.</p>
+      </section>
+
+      <section id="outcome">
+        <h2><span class="stage">Outcome</span>What changed</h2>
+        <div class="delta">
+          <div><div class="n todo">A% → B%</div><div class="l">Mobile form completion, 8 weeks before vs after</div></div>
+          <div><div class="n todo">C% → D%</div><div class="l">Calls tagged qualified by the BDC</div></div>
+          <div><div class="n todo">−E%</div><div class="l">Cost per qualified lead, same budget</div></div>
+        </div>
+        <p><span class="todo">Add: total leads, call volume change, CRM completeness after the trial, and any lift in appointments set.</span> If a number is directional rather than clean (seasonality, a budget change mid-test), say so here; a reviewer trusts a caveated number more than a round one.</p>
+        <p>The stepped pattern became the template for <span class="todo">N</span> other stores in the group, with the vehicle chips swapped per brand. The <code>lead_quality</code> conversion is now a bid signal in the Performance Max campaigns, which is the loop closing: the design feeds the bidding that buys the next visitor.</p>
+      </section>
+
+      <section id="reflection">
+        <h2><span class="stage">Reflection</span>What I'd do differently</h2>
+        <ul>
+          <li>I tested the prototype with five people from the store's email list, which skews to past customers. Next time I'd recruit from a panel to get true first-time shoppers.</li>
+          <li>The "just researching" chip is honest, but it may have invited cold leads to self-select out of the form entirely. I'd A/B test a softer label.</li>
+          <li>I should have instrumented <code>form_field</code> on the old form before the redesign so the before data was step-level, not page-level. The baseline is weaker than it should be.</li>
+        </ul>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="wrap site-foot">
+  <span>Justina Ruszczak · Las Vegas, NV · open to remote</span>
+  <span><a href="/work/search-term-review">Next: Search term review tool</a></span>
+</footer>
+<script src="/rail.js"></script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search term review</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1B2A3A; --ink2:#4A5A6A; --ink3:#8A97A3; --rule:#D3DAE0; --accent:#0E6E63; --accent-tint:#D7EBE7; --bad:#B23A3A; --bad-tint:#F6E1E1; --good:#1E7A3F; --good-tint:#DFF1E4; --warn:#8A6400; --warn-tint:#FFF4C7; --paper:#fff; --ground:#EEF1F4; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Bricolage Grotesque",system-ui,sans-serif; background:var(--ground); color:var(--ink); font-size:15px; }
+  header { background:var(--paper); border-bottom:1px solid var(--rule); padding:12px 16px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:1.05rem; margin:0; }
+  header .meta { color:var(--ink2); font-size:.9rem; }
+  header .spacer { flex:1; }
+  button { font:inherit; cursor:pointer; border-radius:6px; }
+  .btn { background:var(--ink); color:#fff; border:0; padding:8px 14px; font-weight:600; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .btn.ghost { background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  .layout { display:grid; grid-template-columns: 1fr 300px; min-height: calc(100vh - 54px); }
+  main { padding:16px; }
+  aside { background:var(--paper); border-left:1px solid var(--rule); padding:16px; }
+  .stepper { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .stepper div { padding:6px 10px; border-radius:999px; border:1px solid var(--rule); color:var(--ink2); font-size:.85rem; }
+  .stepper div.on { border-color:var(--accent); color:var(--accent); background:var(--accent-tint); }
+  .panel { background:var(--paper); border:1px solid var(--rule); border-radius:8px; padding:16px; margin-bottom:14px; }
+  .panel h2 { font-size:1rem; margin:0 0 8px; }
+  .muted { color:var(--ink2); }
+  .inputs { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+  textarea, select, input { width:100%; font:inherit; font-size:.9rem; padding:9px; border:1px solid var(--rule); border-radius:6px; background:#fff; color:var(--ink); }
+  textarea { min-height:160px; font-family:ui-monospace,Menlo,monospace; }
+  label { display:block; font-weight:600; font-size:.85rem; margin:8px 0 4px; }
+  .cluster { border:1px solid var(--rule); border-radius:8px; margin-bottom:12px; background:var(--paper); overflow:hidden; }
+  .cluster-head { display:flex; gap:12px; align-items:center; padding:12px 14px; background:var(--ground); border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+  .cluster-head h3 { margin:0; font-size:1rem; }
+  .cluster-head .stats { color:var(--ink2); font-size:.85rem; }
+  .conf { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; padding:3px 8px; border-radius:999px; }
+  .conf.high { background:var(--good-tint); color:var(--good); } .conf.med { background:var(--warn-tint); color:var(--warn); } .conf.low { background:var(--bad-tint); color:var(--bad); }
+  .conf i { display:inline-block; width:40px; height:5px; background:rgba(0,0,0,.12); border-radius:3px; overflow:hidden; }
+  .conf i b { display:block; height:100%; background:currentColor; }
+  .why { font-size:.85rem; color:var(--ink2); padding:8px 14px; border-bottom:1px solid var(--rule); }
+  .terms { width:100%; border-collapse:collapse; font-size:.9rem; }
+  .terms td, .terms th { padding:7px 14px; border-bottom:1px solid var(--rule); text-align:left; }
+  .terms th { font-size:.8rem; color:var(--ink2); font-weight:600; }
+  .terms td:nth-child(n+2) { font-variant-numeric:tabular-nums; }
+  .suggest { display:flex; gap:8px; align-items:center; padding:10px 14px; flex-wrap:wrap; }
+  .suggest input { flex:1; min-width:160px; }
+  .suggest select { width:auto; }
+  .actions { display:flex; gap:6px; }
+  .act { border:1px solid var(--rule); background:#fff; padding:7px 11px; font-weight:600; }
+  .act.on-approve { background:var(--good-tint); border-color:var(--good); color:var(--good); }
+  .act.on-reject { background:var(--bad-tint); border-color:var(--bad); color:var(--bad); }
+  .act.on-edit { background:var(--warn-tint); border-color:var(--warn); color:var(--warn); }
+  .status { font-size:.8rem; padding:2px 8px; border-radius:999px; background:var(--ground); color:var(--ink2); }
+  .audit { font-size:.82rem; }
+  .audit li { margin-bottom:6px; color:var(--ink2); }
+  .audit li b { color:var(--ink); }
+  .empty { text-align:center; padding:40px 16px; color:var(--ink2); }
+  .error { background:var(--bad-tint); border:1px solid var(--bad); color:var(--bad); padding:10px 12px; border-radius:6px; margin-bottom:12px; }
+  .warnbox { background:var(--warn-tint); border:1px solid var(--warn); color:var(--warn); padding:10px 12px; border-radius:6px; margin-bottom:12px; }
+  .summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .summary div { background:var(--ground); border-radius:6px; padding:10px; }
+  .summary .n { font-size:1.3rem; font-weight:600; }
+  .summary .l { font-size:.8rem; color:var(--ink2); }
+  pre { background:var(--ground); padding:10px; border-radius:6px; font-size:.8rem; overflow:auto; max-height:200px; }
+  .skeleton { height:14px; background:linear-gradient(90deg,var(--rule),var(--ground),var(--rule)); background-size:200% 100%; animation:sh 1.1s infinite; border-radius:4px; margin:8px 0; }
+  @keyframes sh { to { background-position:-200% 0; } }
+  @media (prefers-reduced-motion: reduce) { .skeleton { animation:none; } }
+  @media (max-width:800px) { .layout { grid-template-columns:1fr; } aside { border-left:0; border-top:1px solid var(--rule); } .inputs, .summary { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Search term review</h1>
+  <span class="meta" id="acct">Sunrise Motors · Search + PMax · last 30 days</span>
+  <span class="spacer"></span>
+  <button class="btn ghost" id="btnReset">Start over</button>
+  <button class="btn" id="btnExport" disabled>Export approved negatives</button>
+</header>
+
+<div class="layout">
+<main>
+  <div class="stepper"><div class="on" id="s1">1 Load terms</div><div id="s2">2 Review suggestions</div><div id="s3">3 Export</div></div>
+
+  <div class="panel" id="inputPanel">
+    <h2>Load a search term report</h2>
+    <p class="muted" style="margin:0 0 10px">Paste a search terms export (term, impressions, clicks, cost, conversions) or load the sample. The tool clusters terms into themes and proposes negative keywords with a confidence score. Nothing is applied to the account until you export.</p>
+    <div class="inputs">
+      <div>
+        <label for="raw">Search terms (CSV or tab-separated)</label>
+        <textarea id="raw" placeholder="search term,impressions,clicks,cost,conversions"></textarea>
+      </div>
+      <div>
+        <label for="goal">Account goal</label>
+        <select id="goal"><option value="calls">Qualified calls and leads (dealership)</option><option value="quotes">Insurance quote starts</option><option value="ecom">E-commerce purchases</option></select>
+        <label for="floor">Minimum cost before a term is flagged ($)</label>
+        <input id="floor" type="number" value="15" min="0">
+        <label for="mode">Suggestion mode</label>
+        <select id="mode"><option value="normal">Normal</option><option value="timeout">Simulate: model timeout</option><option value="lowconf">Simulate: low-confidence batch</option><option value="empty">Simulate: nothing to flag</option></select>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="btnSample">Load sample (48 terms)</button><button class="btn" id="btnRun">Find waste</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="results"></div>
+</main>
+
+<aside>
+  <h2 style="font-size:1rem;margin:0 0 10px">Review summary</h2>
+  <div class="summary"><div><div class="n" id="nApp">0</div><div class="l">Approved</div></div><div><div class="n" id="nEdit">0</div><div class="l">Edited</div></div><div><div class="n" id="nRej">0</div><div class="l">Rejected</div></div></div>
+  <p class="muted" style="font-size:.85rem">Every decision is logged with who, when and what changed. The log exports with the negatives so the account history explains itself.</p>
+  <h3 style="font-size:.9rem;margin:16px 0 8px">Audit trail</h3>
+  <ol class="audit" id="audit" reversed><li class="muted">No decisions yet.</li></ol>
+</aside>
+</div>
+
+<script>
+const SAMPLE = `search term,impressions,clicks,cost,conversions
+2025 honda civic price las vegas,1840,142,312.40,9
+honda civic lease deals near me,1220,98,241.10,6
+honda cr-v for sale las vegas,990,77,198.30,5
+honda accord 2025 msrp,640,41,88.20,2
+honda dealer near me,2210,160,352.00,11
+honda dealership henderson,710,52,114.40,4
+honda civic oil change cost,880,61,97.60,0
+honda cr-v oil change near me,540,39,62.40,0
+honda brake pad replacement price,410,28,44.80,0
+honda check engine light,620,44,57.20,0
+honda civic recall 2024,330,22,26.40,0
+honda careers,290,19,28.50,0
+honda dealership jobs las vegas,210,15,24.00,0
+honda sales associate salary,150,11,16.50,0
+honda civic type r review,980,70,105.00,0
+honda cr-v vs toyota rav4,760,55,82.50,1
+honda accord vs camry,540,38,57.00,0
+honda civic 2025 specs,610,43,51.60,1
+used honda civic under 10000,730,58,92.80,1
+honda civic 2012 for sale,420,31,43.40,0
+cheap honda civic,560,44,61.60,1
+honda civic parts,470,33,39.60,0
+honda oem parts catalog,210,14,16.80,0
+honda civic floor mats,190,12,13.20,0
+honda civic manual pdf,160,10,11.00,0
+honda financial services login,900,72,86.40,0
+honda financial services phone number,480,36,43.20,0
+honda lease payoff,310,23,27.60,0
+free honda civic,120,9,10.80,0
+honda civic giveaway,90,7,8.40,0
+honda civic wallpaper,140,8,8.00,0
+honda civic toy car,110,9,9.90,0
+honda civic 0 apr,520,40,88.00,3
+honda civic trade in value,610,47,98.70,2
+honda cr-v hybrid price,700,54,124.20,4
+honda pilot 2025 price,450,33,79.20,2
+honda odyssey lease,380,27,64.80,2
+honda civic insurance cost,330,25,30.00,0
+honda civic rental las vegas,270,21,31.50,0
+rent a honda civic,180,14,21.00,0
+honda motorcycle dealer las vegas,340,26,33.80,0
+honda generator dealer,150,11,13.20,0
+honda lawn mower parts,130,10,11.00,0
+honda civic 2025 colors,290,22,26.40,1
+honda civic dealer inventory,410,36,86.40,3
+honda dealer open sunday,260,20,42.00,2
+honda ev 2025,380,29,34.80,0
+honda prologue price,420,32,70.40,2`;
+
+const THEMES = [
+  { id:'service', name:'Service and repair', test: t => /oil change|brake|check engine|recall|repair|tire|maintenance/.test(t), negative:'service', match:'phrase', rationale:'Service intent. The store runs a separate fixed-ops campaign; these terms spend sales budget on service traffic.' },
+  { id:'jobs', name:'Jobs and careers', test: t => /career|jobs?|salary|hiring/.test(t), negative:'jobs', match:'phrase', rationale:'Employment intent. Zero conversions across the theme in the last 90 days.' },
+  { id:'research', name:'Reviews and comparisons', test: t => /review|\bvs\b|specs?|wallpaper|manual pdf|colors/.test(t), negative:'review', match:'phrase', rationale:'Research intent with low conversion. Keep for Performance Max awareness? Flagged at medium confidence because "specs" and "colors" occasionally convert.' },
+  { id:'parts', name:'Parts and accessories', test: t => /parts?|catalog|floor mats|oem/.test(t), negative:'parts', match:'phrase', rationale:'Parts intent. Routes to the parts counter, not sales.' },
+  { id:'finance', name:'Honda Financial Services (existing customers)', test: t => /financial services|payoff|login/.test(t), negative:'honda financial services', match:'phrase', rationale:'Existing-customer account management. High click volume, zero sales conversions.' },
+  { id:'free', name:'Free, giveaway, toys', test: t => /\bfree\b|giveaway|toy car|rental|rent a/.test(t), negative:'free', match:'phrase', rationale:'No purchase intent.' },
+  { id:'other', name:'Other Honda products', test: t => /motorcycle|generator|lawn mower/.test(t), negative:'motorcycle', match:'phrase', rationale:'Different product line. The dealer sells cars only.' },
+  { id:'used-old', name:'Very old used models', test: t => /20(0\d|1[0-4])\b|under 10000/.test(t), negative:'under 10000', match:'phrase', rationale:'Below the lot\'s used inventory floor. Low confidence: some converted; the sales manager may want these.' },
+];
+
+const $ = s => document.querySelector(s);
+const state = { clusters: [], audit: [], user: 'justina' };
+
+function parse(raw) {
+  const lines = raw.trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) return { error: 'No rows found. Paste at least a header and one term.' };
+  const sep = lines[0].includes('\t') ? '\t' : ',';
+  const head = lines[0].toLowerCase().split(sep).map(s => s.trim());
+  const idx = k => head.findIndex(h => h.includes(k));
+  const iTerm = idx('term'), iImp = idx('impr'), iClk = idx('click'), iCost = idx('cost'), iConv = idx('conv');
+  if (iTerm < 0 || iCost < 0) return { error: 'Could not find a "search term" and a "cost" column in the header. Expected: search term, impressions, clicks, cost, conversions.' };
+  const rows = lines.slice(1).map(l => { const c = l.split(sep); return { term: (c[iTerm]||'').trim().toLowerCase(), imp: +c[iImp]||0, clicks: +c[iClk]||0, cost: +c[iCost]||0, conv: +c[iConv]||0 }; }).filter(r => r.term);
+  return { rows };
+}
+
+function cluster(rows, floor, mode) {
+  const groups = {};
+  rows.forEach(r => { const th = THEMES.find(t => t.test(r.term)); if (!th) return; (groups[th.id] ||= { theme: th, rows: [] }).rows.push(r); });
+  let out = Object.values(groups).map(g => {
+    const cost = g.rows.reduce((a, r) => a + r.cost, 0), conv = g.rows.reduce((a, r) => a + r.conv, 0), clicks = g.rows.reduce((a, r) => a + r.clicks, 0);
+    let conf = conv === 0 ? 0.92 : conv / clicks < 0.02 ? 0.68 : 0.42;
+    if (g.rows.length < 3) conf -= 0.12;
+    if (mode === 'lowconf') conf = Math.min(conf, 0.38);
+    return { id: g.theme.id, name: g.theme.name, rationale: g.theme.rationale, negative: g.theme.negative, match: g.theme.match, rows: g.rows, cost, conv, clicks, conf: Math.max(0.1, Math.min(0.98, conf)), status: 'pending', originalNegative: g.theme.negative };
+  }).filter(c => c.cost >= floor).sort((a, b) => b.cost - a.cost);
+  if (mode === 'empty') out = [];
+  return out;
+}
+
+function confClass(c) { return c >= 0.8 ? 'high' : c >= 0.55 ? 'med' : 'low'; }
+function money(n) { return '$' + n.toFixed(2); }
+
+function render() {
+  const el = $('#results');
+  if (!state.clusters.length) { el.innerHTML = ''; return; }
+  const totalCost = state.clusters.reduce((a, c) => a + c.cost, 0);
+  const lowBatch = state.clusters.every(c => c.conf < 0.55);
+  el.innerHTML = `
+    ${lowBatch ? `<div class="warnbox">Every suggestion in this batch is low confidence. The model found themes but conversions are spread across them. Review each one against the account goal before approving, or raise the cost floor.</div>` : ''}
+    <div class="panel"><h2>${state.clusters.length} themes flagged · ${money(totalCost)} spend in 30 days · ${state.clusters.reduce((a,c)=>a+c.rows.length,0)} terms</h2><p class="muted" style="margin:0">Approve applies the negative as written. Edit lets you change the keyword or match type before approving. Reject keeps the terms live and records why.</p></div>
+    ${state.clusters.map(c => `
+    <div class="cluster" data-id="${c.id}">
+      <div class="cluster-head">
+        <h3>${c.name}</h3>
+        <span class="conf ${confClass(c.conf)}"><i><b style="width:${Math.round(c.conf*100)}%"></b></i>${Math.round(c.conf*100)}% confidence</span>
+        <span class="stats">${c.rows.length} terms · ${money(c.cost)} · ${c.conv} conv</span>
+        <span class="status" style="margin-left:auto">${c.status === 'pending' ? 'Needs review' : c.status === 'approved' ? 'Approved' : c.status === 'edited' ? 'Edited and approved' : 'Rejected'}</span>
+      </div>
+      <div class="why"><b>Why flagged:</b> ${c.rationale}</div>
+      <table class="terms"><thead><tr><th>Search term</th><th>Clicks</th><th>Cost</th><th>Conv</th></tr></thead><tbody>
+        ${c.rows.sort((a,b)=>b.cost-a.cost).map(r => `<tr><td>${r.term}</td><td>${r.clicks}</td><td>${money(r.cost)}</td><td>${r.conv}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="suggest">
+        <span class="muted" style="font-size:.85rem">Suggested negative:</span>
+        <input value="${c.negative}" data-neg ${c.status !== 'pending' ? 'disabled' : ''} aria-label="Negative keyword">
+        <select data-match ${c.status !== 'pending' ? 'disabled' : ''} aria-label="Match type"><option ${c.match==='phrase'?'selected':''}>phrase</option><option ${c.match==='exact'?'selected':''}>exact</option><option ${c.match==='broad'?'selected':''}>broad</option></select>
+        <div class="actions">
+          <button class="act ${c.status==='approved'||c.status==='edited'?'on-approve':''}" data-act="approve">Approve</button>
+          <button class="act ${c.status==='rejected'?'on-reject':''}" data-act="reject">Reject</button>
+          ${c.status !== 'pending' ? `<button class="act" data-act="undo">Undo</button>` : ''}
+        </div>
+      </div>
+    </div>`).join('')}`;
+  const counts = { approved: 0, edited: 0, rejected: 0 };
+  state.clusters.forEach(c => { if (c.status in counts) counts[c.status]++; });
+  $('#nApp').textContent = counts.approved + counts.edited; $('#nEdit').textContent = counts.edited; $('#nRej').textContent = counts.rejected;
+  $('#btnExport').disabled = !(counts.approved + counts.edited);
+  $('#s3').classList.toggle('on', !!(counts.approved + counts.edited));
+}
+
+function logAudit(msg, detail) {
+  state.audit.unshift({ t: new Date(), msg, detail });
+  $('#audit').innerHTML = state.audit.map(a => `<li><b>${a.msg}</b> ${a.detail || ''}<br><span style="font-size:.75rem">${a.user||state.user} · ${a.t.toLocaleTimeString()}</span></li>`).join('') || '<li class="muted">No decisions yet.</li>';
+}
+
+$('#results').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const wrap = b.closest('.cluster'); const c = state.clusters.find(x => x.id === wrap.dataset.id);
+  const neg = wrap.querySelector('[data-neg]').value.trim(), match = wrap.querySelector('[data-match]').value;
+  if (b.dataset.act === 'approve') {
+    if (!neg) { alert('Enter a negative keyword before approving, or reject the theme.'); return; }
+    const changed = neg !== c.originalNegative || match !== c.match;
+    c.negative = neg; c.match = match; c.status = changed ? 'edited' : 'approved';
+    logAudit(`${changed ? 'Edited and approved' : 'Approved'}: ${c.name}`, changed ? `"${c.originalNegative}" → "${neg}" (${match})` : `"${neg}" (${match})`);
+  } else if (b.dataset.act === 'reject') {
+    const why = prompt('Why keep these terms live? (one line, goes in the audit log)', 'Sales manager wants this traffic');
+    if (why === null) return;
+    c.status = 'rejected'; c.reason = why; logAudit(`Rejected: ${c.name}`, why);
+  } else if (b.dataset.act === 'undo') {
+    c.status = 'pending'; logAudit(`Undid decision: ${c.name}`);
+  }
+  render();
+});
+
+function run() {
+  const parsed = parse($('#raw').value);
+  const res = $('#results');
+  if (parsed.error) { res.innerHTML = `<div class="error">${parsed.error}</div>`; return; }
+  const mode = $('#mode').value;
+  res.innerHTML = `<div class="panel"><h2>Finding themes in ${parsed.rows.length} terms…</h2><div class="skeleton" style="width:70%"></div><div class="skeleton" style="width:50%"></div><div class="skeleton" style="width:60%"></div></div>`;
+  $('#s2').classList.add('on');
+  setTimeout(() => {
+    if (mode === 'timeout') { res.innerHTML = `<div class="error"><b>The model didn't respond in 20 seconds.</b> Your terms are still loaded. <button class="act" onclick="run()">Try again</button> or <a href="#" onclick="document.getElementById('mode').value='normal';run();return false;">run without the simulated failure</a>.</div>`; logAudit('Model timeout', `${parsed.rows.length} terms, no suggestions produced`); return; }
+    state.clusters = cluster(parsed.rows, +$('#floor').value || 0, mode);
+    if (!state.clusters.length) { res.innerHTML = `<div class="panel empty"><b>Nothing to flag above $${$('#floor').value}.</b><br>Every theme either converts or spent less than the floor. Lower the floor to see smaller themes, or review the account next week.</div>`; logAudit('Run complete', 'no themes above the cost floor'); return; }
+    logAudit('Run complete', `${state.clusters.length} themes flagged from ${parsed.rows.length} terms`);
+    render();
+  }, 900);
+}
+
+$('#btnSample').onclick = () => { $('#raw').value = SAMPLE; };
+$('#btnRun').onclick = run;
+$('#btnReset').onclick = () => { state.clusters = []; state.audit = []; $('#results').innerHTML = ''; $('#raw').value = ''; logAudit('Session reset'); $('#s2').classList.remove('on'); $('#s3').classList.remove('on'); render(); $('#audit').innerHTML='<li class="muted">No decisions yet.</li>'; state.audit=[]; };
+$('#btnExport').onclick = () => {
+  const approved = state.clusters.filter(c => c.status === 'approved' || c.status === 'edited');
+  const csv = ['Keyword,Match type,Campaign,Reason,Approved by,Approved at', ...approved.map(c => `"${c.negative}",${c.match},"Sunrise Motors – Search (all)","${c.name}: ${c.rationale.replace(/"/g,"'")}",${state.user},${new Date().toISOString()}`)].join('\n');
+  const log = state.audit.map(a => `${a.t.toISOString()} ${state.user} ${a.msg} ${a.detail||''}`).join('\n');
+  $('#results').insertAdjacentHTML('afterbegin', `<div class="panel"><h2>Export ready: ${approved.length} negative keyword${approved.length===1?'':'s'}</h2><p class="muted" style="margin:0 0 8px">Google Ads Editor format. Rejections are not exported; they stay in the audit log.</p><pre>${csv}</pre><p class="muted" style="margin:8px 0 4px;font-size:.85rem">Audit log</p><pre>${log}</pre><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent).then(()=>this.textContent='Copied')">Copy CSV</button></div>`);
+  logAudit('Exported', `${approved.length} negatives`);
+};
+</script>
+</body>
+</html>

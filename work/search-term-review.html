@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search term review: an AI tool with approve, edit and reject built in — Justina Ruszczak</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="wrap site-head">
+  <a class="name" href="/">Justina Ruszczak</a>
+  <nav><a href="/" aria-current="page">Work</a><a href="/about">About</a><a href="mailto:justyna.ruszczak07@gmail.com">Contact</a></nav>
+</header>
+
+<main class="wrap">
+  <div class="case-head">
+    <p class="kicker">Case study 2 · AI as the product · Internal tool</p>
+    <h1>Search term review: designing an AI tool that specialists would actually trust to touch the account</h1>
+    <div class="summary">
+      <div><strong>Problem</strong>Paid search specialists reviewed thousands of search terms by hand every week and still missed theme-level waste. A pure automation pipeline I'd built found the waste but nobody would let it apply negatives unattended.</div>
+      <div><strong>Outcome</strong><span class="todo">Review time per batch fell from X to Y minutes; Z% of suggestions were accepted as-is, W% edited, and every applied negative has a logged reason.</span> Replace with measured figures from the pilot before publishing.</div>
+    </div>
+    <div class="case-meta">
+      <span><b>Role</b> Designer and builder (pipeline and interface)</span>
+      <span><b>Users</b> 4 paid search specialists, 1 account director</span>
+      <span><b>Timeline</b> 5 weeks</span>
+      <span><b>Tools</b> Gemini API, Google Ads API, Figma, Lovable, GA4</span>
+    </div>
+  </div>
+
+  <div class="case-body">
+    <aside class="rail" aria-label="Case study sections">
+      <ol>
+        <li><a href="#context"><span class="stage">Context</span>The pipeline worked; nobody trusted it</a></li>
+        <li><a href="#constraint"><span class="stage">Constraint</span>Wrong negatives cost real money</a></li>
+        <li><a href="#decision"><span class="stage">Decision</span>Confidence, reasons, and a reject button</a></li>
+        <li><a href="#tradeoff"><span class="stage">Trade-off</span>Slower than automation, faster than manual</a></li>
+        <li><a href="#outcome"><span class="stage">Outcome</span>What changed</a></li>
+        <li><a href="#reflection"><span class="stage">Reflection</span>What I'd do differently</a></li>
+      </ol>
+      <a class="back" href="/">All work</a>
+    </aside>
+
+    <article class="prose">
+      <section id="context">
+        <h2><span class="stage">Context</span>The pipeline worked; nobody trusted it</h2>
+        <p>I'd built an automation that pulled search terms from the Google Ads API, clustered them with an LLM, and proposed negative keywords by theme. In testing on my own dealership accounts it found waste I'd missed by hand: service traffic, careers searches, parts, existing-customer finance logins. The obvious next step was to let it apply the negatives.</p>
+        <p>The account director said no, and she was right. A negative keyword applied at the wrong match type can block a converting theme for weeks before anyone notices. The pipeline had no way to show its reasoning, no way to say how sure it was, and no record of what it had changed. It was fast and opaque, which is exactly the combination people refuse to adopt.</p>
+        <p>I interviewed the four specialists who'd use it. The pattern across all four: they didn't want fewer decisions, they wanted fewer *terms* to read and a reason attached to every suggestion. Two said they'd approve a batch quickly if they could see the terms behind each theme. All four wanted to be able to say no and have that recorded, so the next person didn't re-flag the same theme.</p>
+        <h3>Problem statement</h3>
+        <p>Specialists cannot adopt the negative-keyword automation because it hides its reasoning, gives no confidence signal, and leaves no trace of what changed, so every suggestion has to be re-verified from scratch, which is slower than the manual review it was meant to replace.</p>
+        <p>Metrics: minutes per weekly review per account, share of suggestions accepted as written, share edited, share rejected, and incidents (a negative that blocked a converting term).</p>
+      </section>
+
+      <section id="constraint">
+        <h2><span class="stage">Constraint</span>Wrong negatives cost real money, and the model is sometimes wrong</h2>
+        <ul>
+          <li><strong>Asymmetric risk.</strong> A missed negative wastes a few dollars a day. A wrong negative at phrase match can silence a whole converting theme. The interface had to make the second mistake harder than the first.</li>
+          <li><strong>Model behaviour.</strong> Clustering is reliable; naming the theme and choosing the negative is less so. The model occasionally proposed a negative that was too broad ("honda" for a Honda dealer, once). The design had to assume the suggestion can be wrong.</li>
+          <li><strong>Account history.</strong> Negatives applied without a reason are unexplainable six months later. Anything applied through the tool had to carry who, when and why into the account's change history.</li>
+          <li><strong>Time.</strong> Specialists manage 15 to 30 accounts. If the review took longer than the manual method, adoption would be zero regardless of accuracy.</li>
+        </ul>
+      </section>
+
+      <section id="decision">
+        <h2><span class="stage">Decision</span>Show the terms, score the confidence, require a reason to reject, log everything</h2>
+        <p>I prototyped two directions in Figma and tested each with the four specialists on a real export from one of their accounts.</p>
+        <table>
+          <thead><tr><th>Option</th><th>What it did</th><th>Result in testing</th></tr></thead>
+          <tbody>
+            <tr><td>A. Suggestion list with one-click apply</td><td>A flat list of proposed negatives with an "Apply all" button and per-row checkboxes</td><td>Fast, but every specialist expanded every row to see the underlying terms before approving. The list hid the evidence they needed, so it saved nothing.</td></tr>
+            <tr><td>B. Theme cards with evidence, confidence and three actions</td><td>Each theme shows the terms with cost and conversions, a confidence score with the reason it was flagged, an editable negative and match type, and Approve / Reject (with reason) / Undo</td><td>Chosen. Specialists approved high-confidence themes in seconds and spent their time on the medium ones, which is where their judgement adds value.</td></tr>
+          </tbody>
+        </table>
+        <div class="decision"><strong>Decision.</strong> Option B. The AI's job is to group and rank; the specialist's job is to decide. The interface makes the evidence visible by default and the decision explicit every time.</div>
+        <p>The tool below is a working build with sample data from a dealership account. The "Suggestion mode" dropdown lets you trigger the failure states: a model timeout, a low-confidence batch, and an empty result.</p>
+        <div class="demo">
+          <div class="demo-bar"><span>Working tool · sample data · nothing is applied to any account</span><a href="/tools/search-term-review/" target="_blank" rel="noopener">Open full screen</a></div>
+          <iframe src="/tools/search-term-review/" title="Search term review tool" height="820" loading="lazy"></iframe>
+        </div>
+        <h3>The AI-specific patterns, and why each one is there</h3>
+        <ul>
+          <li><strong>Confidence as a bar and a number, with a reason.</strong> "92% confidence" alone is a vibe. "92%, zero conversions across 11 terms" is something a specialist can check. Confidence drops automatically when a theme has few terms or any conversions.</li>
+          <li><strong>Evidence before action.</strong> Terms, clicks, cost and conversions are visible without expanding anything. The suggestion sits below the evidence, not above it.</li>
+          <li><strong>Edit before approve.</strong> The negative and match type are editable inputs, not labels. Editing is tracked separately from approving so we can measure how often the model's exact suggestion is good enough.</li>
+          <li><strong>Reject requires a reason.</strong> One line, stored in the log. It's the cheapest way to stop the same theme being re-flagged and re-rejected every week.</li>
+          <li><strong>Undo.</strong> Every decision reversible until export. Nothing touches the account until a specialist exports, and the export is in Google Ads Editor format so there's a second review in a tool they already trust.</li>
+          <li><strong>Failure states that say what to do.</strong> A timeout keeps the loaded terms and offers a retry. An all-low-confidence batch is called out at the top rather than hidden per card. An empty result explains the cost floor and how to lower it.</li>
+          <li><strong>Audit trail in the sidebar.</strong> Who, what, when, and for edits the before and after. It exports with the negatives so the account history explains itself.</li>
+        </ul>
+      </section>
+
+      <section id="tradeoff">
+        <h2><span class="stage">Trade-off</span>Slower than unattended automation, and that's the point</h2>
+        <p>The original pipeline could have run nightly with no human in it. The reviewed version needs a specialist for a few minutes per account per week. I argued for the slower version because the cost of one bad negative outweighs the time saved on a hundred good ones, and because a tool people trust gets used, while a tool they fear gets switched off after the first incident.</p>
+        <div class="pushback"><strong>Engineering pushback</strong>The developer helping with the Ads API integration wanted to apply approved negatives directly rather than export a file. We kept the export for the pilot so the first incident, if there was one, would be caught by Ads Editor's own review step. Direct apply is on the roadmap once the acceptance rate is stable.</div>
+        <p>Second trade-off: I limited the model to clustering and naming, and kept the match-type logic rule-based (phrase by default, exact for single-word negatives that could be too broad). Less clever, more predictable, easier to explain in an interview with the account director.</p>
+      </section>
+
+      <section id="outcome">
+        <h2><span class="stage">Outcome</span>What changed</h2>
+        <div class="delta">
+          <div><div class="n todo">X → Y min</div><div class="l">Weekly review time per account</div></div>
+          <div><div class="n todo">Z%</div><div class="l">Suggestions accepted as written</div></div>
+          <div><div class="n todo">W%</div><div class="l">Edited before approval</div></div>
+        </div>
+        <p><span class="todo">Add: number of accounts in the pilot, total negatives applied, incidents (blocked converting terms), and wasted spend identified in the first month.</span> The edit rate is the number I'd lead with: it's the honest measure of how good the model's suggestions are, and the reason the human step stays.</p>
+        <p>The pattern (evidence, confidence with a reason, edit-before-approve, reject-with-reason, undo, export) became the template for the automated reporting tool in the next case study.</p>
+      </section>
+
+      <section id="reflection">
+        <h2><span class="stage">Reflection</span>What I'd do differently</h2>
+        <ul>
+          <li>I built confidence from conversion data alone. Specialists also wanted recency: a theme that converted once in March shouldn't carry the same weight as one that converted last week. That's a one-line change I should have made in week one.</li>
+          <li>The reject reason is free text, which is good for the log and bad for analysis. A short set of reasons plus "other" would let us see why the model is wrong, by category.</li>
+          <li>I tested with four specialists from one agency. The next pilot should include someone who manages insurance accounts, where "quote" and "claim" split intent in ways the dealership themes don't cover.</li>
+        </ul>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="wrap site-foot">
+  <span><a href="/work/dealership-lead-flow">Previous: Dealership lead flow</a></span>
+  <span><a href="/work/performance-report">Next: Automated performance report</a></span>
+</footer>
+<script src="/rail.js"></script>
+</body>
+</html>
