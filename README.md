@@ -1,41 +1,23 @@
-# Justina Ruszczak — portfolio
+# Justina Ruszczak — complete responsive portfolio
 
-Static site, no build step. Three case studies, each with a working demo.
+Fully rebuilt static multipage site, no npm install or build step.
 
-## Structure
+## Pages
+- `/` homepage
+- `/about/` background and experience
+- `/contact/` contact page
+- `/work/dealership-lead-flow/` full case study and interactive form comparison
+- `/work/search-term-review/` full case study and interactive AI review simulation
+- `/work/performance-report/` full case study and interactive report gate simulation
 
-```
-index.html                      Home: positioning + case-study ledger
-about.html
-work/dealership-lead-flow.html  Case study 1 (embeds tools/lead-form)
-work/search-term-review.html    Case study 2 (embeds tools/search-term-review)
-work/performance-report.html    Case study 3 (embeds tools/performance-report)
-tools/*/index.html              Self-contained demos (vanilla JS, sample data)
-styles.css                      Design tokens + layout
-rail.js                         Active-section highlight for the decision rail
-vercel.json                     Clean URLs (/work/x instead of /work/x.html)
-```
+## Preview
+Run a local HTTP server from this folder: `python3 -m http.server 8000`, then open `http://localhost:8000/`. Direct file:// browsing may not resolve root-relative links and styles.
 
-## Deploy to Vercel
+## Deploy
+Import this folder as a new Vercel project with Framework Preset **Other** and no build command. Replace an existing project only after backing up its current source; this is a standalone replacement, not a merge with an unseen Next.js repo.
 
-Option A, drag and drop: go to vercel.com/new, choose "Browse" and drop this folder. Framework preset: Other. Done.
-
-Option B, CLI:
-```
-npm i -g vercel
-vercel          # first deploy, accept defaults, "Other" framework
-vercel --prod   # production
-```
-
-Option C, Git: push this folder to a GitHub repo and import it at vercel.com/new. Every push redeploys.
-
-## Before you publish
-
-1. Search every file for `class="todo"` and replace each yellow placeholder with a real, verified number or remove the sentence. Do not publish placeholder metrics; a reviewer who spots one will assume the rest is invented.
-2. Contact details and About page are filled from LinkedIn; re-check them after any role change.
-3. Add GA4: paste your gtag snippet into the `<head>` of each page, or load it from a shared `analytics.js`. Suggested events: `case_study_view` (page), `demo_open` (clicks on "Open full screen"), `contact_click`.
-4. Optional: swap sample data in `tools/*/index.html` for anonymised exports from real accounts. The demos parse CSV with headers `search term, impressions, clicks, cost, conversions`.
-
-## Editing
-
-Everything is plain HTML and CSS. Tokens are at the top of `styles.css` (dark mode is automatic). Each case study follows the same section order: Context, Constraint, Decision, Trade-off, Outcome, Reflection; keep that order so the rail works.
+## Important
+- The three interactive prototypes use sample data and do not connect to APIs, send emails, or submit forms.
+- Unverified performance placeholders from the prior public portfolio were removed. Add validated outcomes before claiming performance lifts.
+- The homepage mock visual cards represent conceptual UI, not authentic application screenshots.
+- Review biographical details and case-study claims for accuracy before going live.
