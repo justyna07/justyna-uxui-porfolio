@@ -1,1 +1,7 @@
-const copy=document.getElementById('copyEmail');if(copy)copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(copy.dataset.email);document.getElementById('copyStatus').textContent='Email copied.';}catch{document.getElementById('copyStatus').textContent='Select the email address above to copy it.';}});const links=[...document.querySelectorAll('.aside a[href^="#"]')];if(links.length&&'IntersectionObserver'in window){const observer=new IntersectionObserver(items=>{items.forEach(item=>{if(item.isIntersecting){links.forEach(link=>link.classList.toggle('active',link.hash==='#'+item.target.id));}})},{rootMargin:'-10% 0px -65% 0px'});document.querySelectorAll('.content>section').forEach(s=>observer.observe(s));}
+(function(){
+  var btn=document.getElementById('copyEmail');
+  if(btn){btn.addEventListener('click',function(){
+    var email=btn.getAttribute('data-email');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(email).then(function(){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy email'},1800)})}
+  })}
+})();

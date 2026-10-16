@@ -1,16 +1,12 @@
-Justina Ruszczak — Complete Portfolio Redesign
+Justina Ruszczak Portfolio, dark editorial redesign
 
-Includes Home, About, Contact, and three case studies with interactive demos.
-Latest version: larger text across all pages, navigation, buttons, and case studies.
+Pages: Home, About, Contact, and three case studies (dealership-lead-flow, search-term-review, performance-report), each with an interactive local demo.
 
 Deploy on Vercel:
-1. Extract the archive.
-2. Upload the contents to your Vercel-connected repository, replacing the previous site files.
-3. Use Framework Preset: Other, no build command, Output Directory: dist.
-4. Deploy. The included vercel.json specifies the output directory and clean URLs.
+1. Replace the previous site files in your Vercel-connected repository with the contents of this folder (vercel.json at the root, pages inside dist/).
+2. Framework Preset: Other. No build command. Output Directory: dist.
+3. Deploy. vercel.json sets clean URLs and the output directory.
 
-The included demos use illustrative local data. They do not connect to Google Ads, submit leads, or send email. The report claim checker is a limited rule-based prototype, not a production verification system.
+Fonts load from Google Fonts (Manrope, IBM Plex Mono). Everything else is self-contained: no build step, no dependencies.
 
-Checks completed: six pages parsed, internal routes and anchor targets checked, inline JavaScript syntax checked, and key prototype interactions tested in a simulated DOM. Visual browser QA was unavailable in this environment.
-
-Contact email and LinkedIn link are preserved from the existing site.
+The demos use illustrative local data. They do not connect to Google Ads, submit leads, or send email. The report claim checker is a limited rule-based prototype.
